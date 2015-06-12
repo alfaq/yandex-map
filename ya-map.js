@@ -39,7 +39,8 @@ function init () {
     for (var i = 0, len = points.length; i < len; i++) {
         geoObjects[i] = new ymaps.Placemark(points[i], getPointData(i));
     }
-
+		
+		
     clusterer.add(geoObjects);
     myMap.geoObjects.add(clusterer);
     };

@@ -1,7 +1,4 @@
-<?php
-
-include_once("getCcsv.php");
-?>
+<?php include_once("getCcsv.php"); ?>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
@@ -29,13 +26,7 @@ include_once("getCcsv.php");
                 };
             },
             points = [
-                <?php 
-                    //init('address.csv', 'coord.csv');
-                    $ars = getCoord('coord.csv');
-                    foreach($ars as $ar){
-                        echo $ar.', ';
-                    }
-                ?>
+                <?php init('address.csv', 'coord.csv'); ?>
             ],
             geoObjects = [];
     

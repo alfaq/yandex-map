@@ -1,39 +1,45 @@
 ﻿<?php
 /*
-**Init - Считываем адреса из файла и получае координаты в выходной файл
+**Init - Считываем адреса из файла и получаем координаты в выходной файл
 */
     function Init($from, $to){
-        $address = array();
-        $aCoord = array();
-        $file_path = $_SERVER['DOCUMENT_ROOT'].'/'.$from;
+        $file_path = $_SERVER['DOCUMENT_ROOT'].'/'.$from;//входной файл
+        $file_to = $_SERVER['DOCUMENT_ROOT'].'/'.$to;//выходной файл
         
-        //если существует файл
-        if (file_exists($file_path)){
-            $content = file($file_path);
-            if (!empty($content)){
-                   foreach ($content as $str){
-                        $str = trim($str);
-                        $temp = explode(";", $str);
-                            if(!empty($temp))
-                                $address[] = $temp[0];//получаем массив адресов из первой ячейки csv файла
-                    }
+        if(!file_exists($file_to)){//если файла с координатами не существует, создадим его
+            $address = array();
+            $aCoord = array();
+            
+            //если существует входной файл с адресами
+            if (file_exists($file_path)){
+                $content = file($file_path);
+                if (!empty($content)){
+                       foreach ($content as $str){
+                            $str = trim($str);
+                            $temp = explode(";", $str);
+                                if(!empty($temp))
+                                    $address[] = $temp[0];//получаем массив адресов из первой ячейки csv файла
+                        }
+                }
             }
-        }
-        
-        $file_to = $_SERVER['DOCUMENT_ROOT'].'/'.$to;
-        //вызываем функцию получения координат по строке адреса
-        $file = fopen($file_to, "w");
-        foreach($address as $adr){
-            $coord = askYandex($adr);
-            if(!empty($coord[0]) && !EMPTY($coord[1])){
-                fwrite($file, $adr.'; '.$coord[1] .', '. $coord[0] . PHP_EOL);
-                
-                //echo $adr.' - ['.$coord[0] .', '. $coord[1].']<br />';
+            
+            //вызываем функцию получения координат по строке адреса
+            $file = fopen($file_to, "w");
+            foreach($address as $adr){
+                $coord = askYandex($adr);
+                if(!empty($coord[0]) && !EMPTY($coord[1])){
+                    fwrite($file, $adr.'; '.$coord[1] .', '. $coord[0] . PHP_EOL);
+                    
+                    //echo $adr.' - ['.$coord[0] .', '. $coord[1].']<br />';
+                }
             }
+            fclose($file);
         }
-        fclose($file);
-        //возвращаем массив координат
-       
+        //вызываем функцию вывода координат из выходного файла
+        $ars = getCoord($file_to);
+        foreach($ars as $ar){
+            echo $ar.', ';
+        }  
     }
     
 /*
@@ -60,19 +66,18 @@
 **getAddr - Функция получения исходного адреса из файла для балуна
 */    
     function getAddr($file){
-        $content = file($file);
-
-        if (empty($content))
-            return array();
-
         $aAddr = array();
-
-        foreach ($content as $str) {
-            $temp = explode(";", $str);
-            if (!empty($temp))
-                $aAddr[] = trim($temp[0]);
-        }
-            
+        if(!file_exists($file_to)){
+            $content = file($file);
+            if (empty($content))
+                return array();
+    
+            foreach ($content as $str) {
+                $temp = explode(";", $str);
+                if (!empty($temp))
+                    $aAddr[] = trim($temp[0]);
+            }
+        }    
         return $aAddr;
     }
 
